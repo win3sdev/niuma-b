@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "人工审核管理系统",
-  description: "负责对611数据进行单独人工审核管理.",
+  title: "牛马ICU-人工审核管理系统",
+  description: "负责对牛马ICU数据进行单独人工审核管理.",
 };
 
 export default function RootLayout({
