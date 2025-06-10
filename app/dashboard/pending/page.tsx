@@ -24,6 +24,7 @@ export default function PendingPage() {
 
   const fetchSurveys = async () => {
     try {
+      
       setLoading(true);
       const response = await fetch(
         `/api/surveys?status=pending&page=${page}&pageSize=${PAGE_SIZE}`
