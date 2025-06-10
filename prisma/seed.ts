@@ -19,6 +19,7 @@ async function main() {
   console.log({ admin });
 }
 
+
 main()
   .catch((e) => {
     console.error(e);

@@ -50,7 +50,7 @@ export default function DashboardPage() {
         rejectedCount: rejectedData.data.length,
       });
     } catch (error) {
-      console.error("Error fetching stats:", error);
+      // console.error("Error fetching stats:", error);
       setError("获取数据失败，请稍后重试");
     } finally {
       setLoading(false);

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { NextRequestWithAuth } from 'next-auth/middleware';
 
+
 export default async function middleware(request: NextRequestWithAuth) {
   const token = await getToken({ req: request });
   const isAuthenticated = !!token;
@@ -22,7 +23,6 @@ export default async function middleware(request: NextRequestWithAuth) {
   return NextResponse.next();
 }
 
-// Configure protected routes
 export const config = {
   matcher: ['/', '/dashboard/:path*', '/login']
 } 

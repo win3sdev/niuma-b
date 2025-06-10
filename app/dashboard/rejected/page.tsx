@@ -30,7 +30,7 @@ export default function RejectedPage() {
       setSurveys(data.data);
       setTotalCount(data.total);
     } catch (error) {
-      console.error("Error fetching surveys:", error);
+      // console.error("Error fetching surveys:", error);
       setError("获取数据失败，请稍后重试");
     } finally {
       setLoading(false);
@@ -60,7 +60,6 @@ export default function RejectedPage() {
       }
 
       setSurveys((prev) => {
-        // const updated = prev.filter((survey) => survey.id !== surveyId);
         const updated = prev.filter((survey) => survey.id !== String(surveyId));
         if (updated.length === 0 && page > 1) {
           setPage((p) => p - 1);
@@ -68,7 +67,7 @@ export default function RejectedPage() {
         return updated;
       });
     } catch (error) {
-      console.error("Error updating survey:", error);
+      // console.error("Error updating survey:", error);
       setError("操作失败，请稍后重试");
     }
   };
