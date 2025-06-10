@@ -81,7 +81,6 @@ export default function Sidebar() {
       className="flex h-full w-64 flex-col bg-gray-900 text-white shadow-xl transition-opacity duration-300"
       style={{ opacity: mounted ? 1 : 0 }}
     >
-      {/* 站点名称区域 */}
       <div
         className="flex h-16 items-center justify-center border-b border-gray-800 bg-gray-950 px-4 cursor-pointer hover:bg-gray-900"
         onClick={() => router.push("/dashboard")}

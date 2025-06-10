@@ -4,7 +4,6 @@ import { authOptions } from "@/lib/authConfig";
 import { prisma } from "@/app/lib/prisma";
 import bcrypt from "bcryptjs";
 
-// PUT /api/users/[id]
 export async function PUT(request: NextRequest, context: any) {
   try {
     const { id } = context.params;
@@ -49,7 +48,6 @@ export async function PUT(request: NextRequest, context: any) {
   }
 }
 
-// DELETE /api/users/[id]
 export async function DELETE(request: NextRequest, context: any) {
   try {
     const { id } = context.params;
