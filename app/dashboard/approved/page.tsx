@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { SurveyEntry } from "@/app/types/survey";
 import DetailModal from "@/app/components/DetailModal";
-import { format } from "date-fns";
 
 export default function ApprovedPage() {
   const [surveys, setSurveys] = useState<SurveyEntry[]>([]);
