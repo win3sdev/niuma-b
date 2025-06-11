@@ -40,6 +40,8 @@ export default function ApprovedPage() {
     fetchSurveys();
   }, [page]);
 
+
+  
   const handleReview = (survey: SurveyEntry) => {
     setSelectedSurvey(survey);
     setShowReviewModal(true);
