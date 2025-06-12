@@ -65,8 +65,8 @@ export default function PendingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           surveyId: selectedSurvey.id,
-          status: "approved",
-          comment: reviewComment,
+          reviewStatus: "approved",
+          reviewComment: reviewComment,
         }),
       });
       if (!response.ok) throw new Error(`操作失败: ${response.status}`);
