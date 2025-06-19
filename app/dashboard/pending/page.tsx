@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { SurveyEntry } from "@/app/types/survey";
 import DetailModal from "@/app/components/DetailModal";
+import { EditModal } from "@/app/components/EditModal";
+import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
 
@@ -17,6 +19,17 @@ export default function PendingPage() {
   );
   const [reviewComment, setReviewComment] = useState("");
 
+  const [editSurvey, setEditSurvey] = useState(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [gotoPage, setGotoPage] = useState("");
+
+  // 编辑按钮点击事件
+  const handleEditClick = (survey: any) => {
+    setSelectedSurvey(survey);
+    setShowEdit(true);
+  };
+
   // 分页相关
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -24,7 +37,6 @@ export default function PendingPage() {
 
   const fetchSurveys = async () => {
     try {
-      
       setLoading(true);
       const response = await fetch(
         `/api/surveys?status=pending&page=${page}&pageSize=${PAGE_SIZE}`
@@ -70,7 +82,7 @@ export default function PendingPage() {
         }),
       });
       if (!response.ok) throw new Error(`操作失败: ${response.status}`);
-
+      toast.success("审核操作成功！");
       setSurveys((prev) =>
         prev.filter((survey) => survey.id !== selectedSurvey.id)
       );
@@ -78,6 +90,7 @@ export default function PendingPage() {
       setReviewComment("");
     } catch (err) {
       const error = err as Error;
+      toast.success("审核操作失败！");
       setError(`操作失败，请稍后重试: ${error.message}`);
     }
   };
@@ -96,7 +109,7 @@ export default function PendingPage() {
         }),
       });
       if (!response.ok) throw new Error(`操作失败: ${response.status}`);
-
+      toast.success("审核操作成功！");
       setSurveys((prev) =>
         prev.filter((survey) => survey.id !== selectedSurvey.id)
       );
@@ -104,6 +117,7 @@ export default function PendingPage() {
       setReviewComment("");
     } catch (err) {
       const error = err as Error;
+      toast.success("审核操作失败！");
       setError(`操作失败，请稍后重试: ${error.message}`);
     }
   };
@@ -215,7 +229,9 @@ export default function PendingPage() {
                   <td className="px-4 py-3 max-w-[200px] truncate">
                     {survey.province}
                   </td>
-                  <td className="px-4 py-3 max-w-[200px] truncate">{survey.city}</td>
+                  <td className="px-4 py-3 max-w-[200px] truncate">
+                    {survey.city}
+                  </td>
                   <td className="px-4 py-3 max-w-[200px] truncate">
                     {survey.overtimePay}
                   </td>
@@ -257,6 +273,13 @@ export default function PendingPage() {
                       >
                         审核
                       </button>
+
+                      <button
+                        onClick={() => handleEditClick(survey)}
+                        className="rounded-md bg-yellow-500 px-3 py-1 text-white text-sm hover:bg-yellow-600 transition-colors"
+                      >
+                        编辑
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -267,24 +290,58 @@ export default function PendingPage() {
       </div>
 
       {/* 分页 */}
-      <div className="mt-6 flex items-center justify-center gap-4 text-sm">
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
         <button
-          onClick={() => handlePageChange(page - 1)}
+          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
           disabled={page === 1}
           className="rounded bg-gray-200 px-3 py-1 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           上一页
         </button>
+
         <span className="text-gray-600">
           第 <strong>{page}</strong> 页 / 共 <strong>{totalPages}</strong> 页
         </span>
+
         <button
-          onClick={() => handlePageChange(page + 1)}
+          onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
           disabled={page === totalPages}
           className="rounded bg-gray-200 px-3 py-1 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           下一页
         </button>
+
+        {/* 跳转页数 */}
+        <div className="flex items-center gap-1">
+          <input
+            type="number"
+            value={gotoPage}
+            onChange={(e) => setGotoPage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const pageNum = Number(gotoPage);
+                if (pageNum >= 1 && pageNum <= totalPages) {
+                  setPage(pageNum);
+                  setGotoPage("");
+                }
+              }
+            }}
+            placeholder="页"
+            className="w-16 rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          />
+          <button
+            onClick={() => {
+              const pageNum = Number(gotoPage);
+              if (pageNum >= 1 && pageNum <= totalPages) {
+                setPage(pageNum);
+                setGotoPage("");
+              }
+            }}
+            className="rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-300"
+          >
+            跳转
+          </button>
+        </div>
       </div>
 
       {/* 审核模态框 */}
@@ -337,6 +394,35 @@ export default function PendingPage() {
         type="pending"
         onReview={handleReview}
       />
+
+      {/* 编辑模态框 */}
+      {showEdit && selectedSurvey && (
+        <EditModal
+          survey={selectedSurvey}
+          onClose={() => setShowEdit(false)}
+          onSave={async (updated: Partial<SurveyEntry>) => {
+            try {
+              const res = await fetch("/api/update", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updated),
+              });
+
+              if (!res.ok) {
+                const err = await res.json();
+                toast.error("保存失败，请稍后重试！");
+                return;
+              }
+
+              toast.success("保存成功！");
+              setShowEdit(false);
+              fetchSurveys();
+            } catch (err) {
+              toast.error("网络错误，请稍后重试！");
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

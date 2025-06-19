@@ -73,7 +73,6 @@ export default function DetailModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-40">
       <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-lg">
-        {/* 顶部标题与关闭按钮 */}
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-semibold">详细内容</h2>
           <button
@@ -84,7 +83,6 @@ export default function DetailModal({
           </button>
         </div>
 
-        {/* 内容区 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
           <div className="space-y-4">
             <Info label="性别" value={survey?.gender} icon={UserCheck} />
@@ -138,12 +136,6 @@ export default function DetailModal({
               icon={FileText}
               multiline
             />
-            {/* <Info
-      label="其他长期工时问题"
-      value={survey?.longWorkIssuesOtherText}
-      icon={FileText}
-      multiline
-    /> */}
 
             <Info
               label="职场中受到的歧视"
@@ -155,12 +147,6 @@ export default function DetailModal({
               icon={ShieldAlert}
               multiline
             />
-            {/* <Info
-      label="其他歧视类型"
-      value={survey?.discriminationReasonsOther}
-      icon={ShieldAlert}
-      multiline
-    /> */}
 
             <Info
               label="企业存在以下违法违规现象"
@@ -172,12 +158,6 @@ export default function DetailModal({
               icon={Ban}
               multiline
             />
-            {/* <Info
-      label="其他违规行为"
-      value={survey?.violationsObservedOther}
-      icon={Ban}
-      multiline
-    /> */}
 
             <Info
               label="期望的改变"
@@ -189,12 +169,6 @@ export default function DetailModal({
               icon={Lightbulb}
               multiline
             />
-            {/* <Info
-      label="其他期望改变"
-      value={survey?.expectedChangesOther}
-      icon={Lightbulb}
-      multiline
-    /> */}
 
             <Info
               label="评论/故事"

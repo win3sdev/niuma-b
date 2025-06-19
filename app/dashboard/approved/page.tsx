@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SurveyEntry } from "@/app/types/survey";
 import DetailModal from "@/app/components/DetailModal";
+import { toast } from "sonner";
 
 export default function ApprovedPage() {
   const [surveys, setSurveys] = useState<SurveyEntry[]>([]);
@@ -16,6 +17,7 @@ export default function ApprovedPage() {
   const [reviewComment, setReviewComment] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [gotoPage, setGotoPage] = useState("");
   const pageSize = 10;
 
   useEffect(() => {
@@ -40,8 +42,6 @@ export default function ApprovedPage() {
     fetchSurveys();
   }, [page]);
 
-
-  
   const handleReview = (survey: SurveyEntry) => {
     setSelectedSurvey(survey);
     setShowReviewModal(true);
@@ -61,7 +61,7 @@ export default function ApprovedPage() {
       });
 
       if (!response.ok) throw new Error("操作失败");
-
+      toast.success("审核操作成功！");
       setSurveys((prev) =>
         prev.filter((survey) => survey.id !== selectedSurvey.id)
       );
@@ -69,6 +69,7 @@ export default function ApprovedPage() {
       setReviewComment("");
     } catch (error) {
       console.error("Error updating survey:", error);
+      toast.success("审核操作失败！");
       setError("操作失败，请稍后重试");
     }
   };
@@ -180,14 +181,30 @@ export default function ApprovedPage() {
                     <td className="px-4 py-3 max-w-[200px] truncate">
                       {survey.companySize}
                     </td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{survey.companyType}</td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{survey.province}</td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{survey.city}</td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{survey.overtimePay}</td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{survey.negativeConsequence}</td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{survey.gender}</td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{survey.ageRange}</td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{survey.occupation}</td>
+                    <td className="px-4 py-3 max-w-[200px] truncate">
+                      {survey.companyType}
+                    </td>
+                    <td className="px-4 py-3 max-w-[200px] truncate">
+                      {survey.province}
+                    </td>
+                    <td className="px-4 py-3 max-w-[200px] truncate">
+                      {survey.city}
+                    </td>
+                    <td className="px-4 py-3 max-w-[200px] truncate">
+                      {survey.overtimePay}
+                    </td>
+                    <td className="px-4 py-3 max-w-[200px] truncate">
+                      {survey.negativeConsequence}
+                    </td>
+                    <td className="px-4 py-3 max-w-[200px] truncate">
+                      {survey.gender}
+                    </td>
+                    <td className="px-4 py-3 max-w-[200px] truncate">
+                      {survey.ageRange}
+                    </td>
+                    <td className="px-4 py-3 max-w-[200px] truncate">
+                      {survey.occupation}
+                    </td>
                     <td className="px-4 py-3 max-w-[200px] truncate">
                       {survey.longWorkIssues}
                     </td>
@@ -197,7 +214,9 @@ export default function ApprovedPage() {
                     <td className="px-4 py-3 max-w-[200px] truncate">
                       {survey.violationsObserved}
                     </td>
-                    <td className="px-4 py-3 max-w-[200px] truncate">{survey.expectedChanges}</td>
+                    <td className="px-4 py-3 max-w-[200px] truncate">
+                      {survey.expectedChanges}
+                    </td>
                     <td className="px-4 py-3 max-w-[200px] truncate">
                       {survey.story}
                     </td>
@@ -207,13 +226,13 @@ export default function ApprovedPage() {
                     <td className="px-4 py-3 max-w-[200px] truncate">
                       {/* {survey.updatedAt} */}
                       {new Date(survey.updatedAt).toLocaleString("zh-CN", {
-                      timeZone: "Asia/Shanghai",
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                        timeZone: "Asia/Shanghai",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </td>
                     <td className="px-4 py-3 max-w-[200px] truncate">
                       {survey.reviewer}
@@ -244,7 +263,7 @@ export default function ApprovedPage() {
           </div>
 
           {/* 分页器 */}
-          <div className="mt-6 flex items-center justify-center gap-4 text-sm">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
             <button
               onClick={() => setPage((prev) => Math.max(1, prev - 1))}
               disabled={page === 1}
@@ -265,6 +284,38 @@ export default function ApprovedPage() {
             >
               下一页
             </button>
+
+            {/* 跳转页数 */}
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                value={gotoPage}
+                onChange={(e) => setGotoPage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const pageNum = Number(gotoPage);
+                    if (pageNum >= 1 && pageNum <= totalPages) {
+                      setPage(pageNum);
+                      setGotoPage("");
+                    }
+                  }
+                }}
+                placeholder="页"
+                className="w-16 rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+              <button
+                onClick={() => {
+                  const pageNum = Number(gotoPage);
+                  if (pageNum >= 1 && pageNum <= totalPages) {
+                    setPage(pageNum);
+                    setGotoPage("");
+                  }
+                }}
+                className="rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-300"
+              >
+                跳转
+              </button>
+            </div>
           </div>
         </>
       )}

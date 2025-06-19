@@ -28,11 +28,9 @@ export default async function middleware(request: NextRequestWithAuth) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  
-
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/login", "/_next/static/:path*",],
+  matcher: ["/", "/dashboard/:path*", "/login", "/_next/static/:path*"],
 };

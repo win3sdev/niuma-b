@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SurveyEntry } from "@/app/types/survey";
 import DetailModal from "@/app/components/DetailModal";
+import { toast } from "sonner";
 
 export default function RejectedPage() {
   const [surveys, setSurveys] = useState<SurveyEntry[]>([]);
@@ -14,6 +15,7 @@ export default function RejectedPage() {
   );
 
   const [page, setPage] = useState(1);
+  const [gotoPage, setGotoPage] = useState("");
   const pageSize = 10;
   const [totalCount, setTotalCount] = useState(0);
 
@@ -58,6 +60,7 @@ export default function RejectedPage() {
       if (!response.ok) {
         throw new Error("操作失败");
       }
+      toast.success("审核操作成功！");
 
       setSurveys((prev) => {
         const updated = prev.filter((survey) => survey.id !== String(surveyId));
@@ -68,6 +71,7 @@ export default function RejectedPage() {
       });
     } catch (error) {
       // console.error("Error updating survey:", error);
+      toast.success("审核操作失败！");
       setError("操作失败，请稍后重试");
     }
   };
@@ -93,6 +97,7 @@ export default function RejectedPage() {
     );
   }
 
+  const totalPages = Math.ceil(totalCount / pageSize);
   return (
     <div className="rounded-lg bg-white p-6 shadow">
       <h1 className="mb-6 text-2xl font-bold text-gray-800">审核拒绝列表</h1>
@@ -252,25 +257,58 @@ export default function RejectedPage() {
       </div>
 
       {/* 分页 */}
-      <div className="mt-6 flex items-center justify-center gap-4 text-sm">
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
         <button
+          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
           disabled={page === 1}
-          onClick={() => setPage((p) => Math.max(p - 1, 1))}
           className="rounded bg-gray-200 px-3 py-1 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           上一页
         </button>
+
         <span className="text-gray-600">
-          第 <strong>{page}</strong> 页 / 共{" "}
-          <strong>{Math.ceil(totalCount / pageSize)}</strong> 页
+          第 <strong>{page}</strong> 页 / 共 <strong>{totalPages}</strong> 页
         </span>
+
         <button
-          disabled={page >= Math.ceil(totalCount / pageSize)}
-          onClick={() => setPage((p) => p + 1)}
+          onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+          disabled={page === totalPages}
           className="rounded bg-gray-200 px-3 py-1 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           下一页
         </button>
+
+        {/* 跳转页数 */}
+        <div className="flex items-center gap-1">
+          <input
+            type="number"
+            value={gotoPage}
+            onChange={(e) => setGotoPage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const pageNum = Number(gotoPage);
+                if (pageNum >= 1 && pageNum <= totalPages) {
+                  setPage(pageNum);
+                  setGotoPage("");
+                }
+              }
+            }}
+            placeholder="页"
+            className="w-16 rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          />
+          <button
+            onClick={() => {
+              const pageNum = Number(gotoPage);
+              if (pageNum >= 1 && pageNum <= totalPages) {
+                setPage(pageNum);
+                setGotoPage("");
+              }
+            }}
+            className="rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-300"
+          >
+            跳转
+          </button>
+        </div>
       </div>
 
       <DetailModal
